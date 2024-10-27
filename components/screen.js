@@ -17,8 +17,6 @@ import axios from "axios";
 const Screen_01 = () => {
     const [category, setCategory] = useState([]);
     const [location, setLocation] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchFocused, setSearchFocused] = useState(false);
 
     const screenWidth = Dimensions.get("window").width;
 
@@ -48,20 +46,10 @@ const Screen_01 = () => {
                                 source={require("../assets/logoicon.png")}
                                 style={styles.logoicon}
                             />
-                            <View
-                                style={[
-                                    styles.searchBox,
-                                    searchFocused &&
-                                        styles.inputContainerFocused,
-                                ]}
-                            >
+                            <View style={[styles.searchBox]}>
                                 <TextInput
                                     style={styles.searchInput}
                                     placeholder="Search here..."
-                                    value={searchQuery}
-                                    onFocus={() => setSearchFocused(true)}
-                                    onBlur={() => setSearchFocused(false)}
-                                    onChangeText={setSearchQuery}
                                 />
                                 <Image
                                     source={require("../assets/findicon.png")}
@@ -237,10 +225,6 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: "center",
         justifyContent: "space-between",
-    },
-    inputContainerFocused: {
-        borderColor: "#1f1f1f",
-        borderWidth: 1,
     },
     searchInput: {
         backgroundColor: "transparent",
