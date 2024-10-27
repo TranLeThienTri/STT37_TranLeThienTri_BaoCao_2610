@@ -22,12 +22,12 @@ const Screen_01 = () => {
 
     useEffect(() => {
         axios
-            .get("https://671ba9d92c842d92c380d3a1.mockapi.io/category")
+            .get("https://671e067c1dfc429919810d43.mockapi.io/categories")
             .then((response) => {
                 setCategory(response.data);
             });
         axios
-            .get("https://671ba9d92c842d92c380d3a1.mockapi.io/location")
+            .get("https://671e067c1dfc429919810d43.mockapi.io/locations")
             .then((response) => {
                 setLocation(response.data);
             });
