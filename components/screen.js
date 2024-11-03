@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import axios from "axios";
 
-const Screen_01 = () => {
+const Screen_01 = ({ navigation, route }) => {
+    const { user } = route.params; // Nhận dữ liệu từ params
     const [category, setCategory] = useState([]);
     const [location, setLocation] = useState([]);
 
@@ -58,10 +59,21 @@ const Screen_01 = () => {
                             </View>
                         </View>
 
-                        <View style={styles.userInfoContainer}>
+                        <TouchableOpacity
+                            style={styles.userInfoContainer}
+                            onPress={() => {
+                                navigation.navigate("Profile", { user: user });
+                            }}
+                        >
                             <View style={styles.userInfo}>
                                 <Image
-                                    source={require("../assets/personicon.png")}
+                                    source={
+                                        user && user.avatar
+                                            ? {
+                                                  uri: `http://localhost/uploads/${user.avatar}`,
+                                              }
+                                            : require("../assets/personicon.png")
+                                    }
                                     style={styles.userImage}
                                 />
                                 <View>
@@ -69,7 +81,7 @@ const Screen_01 = () => {
                                         Welcome!
                                     </Text>
                                     <Text style={styles.userName}>
-                                        Donna Stroupe
+                                        {user.name}
                                     </Text>
                                 </View>
                             </View>
@@ -77,7 +89,7 @@ const Screen_01 = () => {
                                 source={require("../assets/ringicon.png")}
                                 style={styles.iconBell}
                             />
-                        </View>
+                        </TouchableOpacity>
                     </View>
 
                     {/* Categories */}
