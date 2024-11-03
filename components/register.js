@@ -6,9 +6,11 @@ import {
     Text,
     TouchableOpacity,
     Image,
+    Platform
 } from "react-native";
 import { useState } from "react";
 import axios from "axios";
+import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 
 export default RegisterScreen = ({ navigation }) => {
@@ -16,31 +18,54 @@ export default RegisterScreen = ({ navigation }) => {
     const [password, setPassword] = useState("");
     const [retryPassword, setRetryPassword] = useState("");
     const [imageUri, setImageUri] = useState(null);
-
+    const [imageFile, setImageFile] = useState(null);
     const handleImagePicker = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setImageUri(result.assets[0].uri);
+        if (Platform.OS === 'web') {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    setImageUri(URL.createObjectURL(file)); // Để hiển thị ảnh trên web
+                    setImageFile(file); // Để upload lên server
+                }
+            };
+            input.click();
+        } else {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+  
+            if (!result.canceled) {
+                setImageUri(result.assets[0].uri);
+                setImageFile({
+                    uri: result.assets[0].uri,
+                    type: 'image/png', // type của ảnh
+                    name: 'avatar.png', // tên file
+                });
+            }
         }
-
-        console.log(imageUri + ":::imageUri");
     };
 
     const addUser = async (username, password) => {
         const formData = new FormData();
         formData.append("username", username);
         formData.append("password", password);
-        formData.append("avatar", {
-            uri: imageUri,
-            type: "image/png", // or the type of the image you are using
-            name: "avatar.png", // change the name accordingly
-        });
+        if (Platform.OS === 'web') {
+            formData.append('avatar', imageFile);
+        } else {
+            formData.append('avatar', imageFile);
+        }
+
+        // formData.append("avatar", {
+        //     uri: imageUri,
+        //     type: "image/png", // or the type of the image you are using
+        //     name: "avatar.png", // change the name accordingly
+        // });
 
         try {
             const response = await axios.post(
@@ -69,6 +94,7 @@ export default RegisterScreen = ({ navigation }) => {
             );
         }
     };
+    
 
     const handleRegister = (username, password, retryPassword) => {
         if (username && password === retryPassword) {
@@ -112,7 +138,7 @@ export default RegisterScreen = ({ navigation }) => {
                     />
                 </View>
                 {/* Button to select an image */}
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.imagePickerButton}
                     onPress={handleImagePicker}
                 >
@@ -123,7 +149,18 @@ export default RegisterScreen = ({ navigation }) => {
                         source={{ uri: imageUri }}
                         style={styles.previewImage}
                     />
-                )}
+                )} */}
+
+                <TouchableOpacity style={styles.imagePickerButton} onPress={handleImagePicker}>
+                <Text style={styles.imagePickerText}>Upload Image</Text>
+                    {imageUri ? (
+                        <Image source={{ uri: imageUri }} style={styles.previewImage} />
+                    ) : (
+                        <MaterialIcons name="account-circle" size={100} color="#fff" />
+                    )}
+            </TouchableOpacity>
+
+
                 <TouchableOpacity
                     style={styles.btnRegister}
                     onPress={() => {

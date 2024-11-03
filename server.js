@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2");
+const mongoose = require('mongoose');
 const cors = require("cors");
 const path = require("path");
 const multer = require("multer");
@@ -8,24 +9,34 @@ const app = express();
 const port = 3000;
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
+app.use('/uploads', express.static('uploads')); // Cho phép truy cập các file trong thư mục uploads
 
-// Setup multer for file uploads
+// Thiết lập multer để tải file
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        cb(null, 'uploads/'); // Thư mục lưu file
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
+        cb(null, Date.now() + path.extname(file.originalname)); // Đặt tên file
+    }
 });
+const upload = multer({ storage }); // Tạo biến upload cho việc tải file
 
-const upload = multer({ storage });
+
+// Connect to MongoDB
+// const mongoURI = 'mongodb://localhost:27017/mobile'; // Replace with your MongoDB URI
+
+// mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+//   .then(() => console.log('MongoDB connected'))
+//   .catch(err => console.error('MongoDB connection error:', err));
+
+
+
 // Cấu hình kết nối MySQL
 const db = mysql.createConnection({
     host: "localhost", // Địa chỉ server MySQL
     user: "root", // Tên người dùng MySQL
-    password: "root", // Mật khẩu MySQL
+    password: "sapassword", // Mật khẩu MySQL
     database: "mobile", // Tên database
 });
 
@@ -111,7 +122,7 @@ app.delete("/user/:id", (req, res) => {
     });
 });
 
-// update
+// // update
 app.put("/user/:id", (req, res) => {
     const id = req.params.id;
     const { name, password, image } = req.body;
@@ -126,6 +137,36 @@ app.put("/user/:id", (req, res) => {
         }
     );
 });
+
+// Endpoint để đăng ký tài khoản
+// app.post('/register', upload.single('avatar'), (req, res) => {
+//     const { username, password } = req.body;
+//     const avatar = req.file ? req.file.filename : null;
+//     console.log(req.file);
+
+//     // Kiểm tra username có tồn tại không
+//     const checkQuery = 'SELECT * FROM Account WHERE username = ?';
+//     db.query(checkQuery, [username], (err, result) => {
+//         if (err) {
+//             return res.status(500).json({ error: 'Database error' });
+//         }
+//         if (result.length > 0) {
+//             return res.status(409).json({ error: 'Username already exists' });
+//         }
+
+//         // Thêm tài khoản mới vào cơ sở dữ liệu
+//         const insertQuery = 'INSERT INTO Account (username, password, avatar) VALUES (?, ?, ?)';
+//         db.query(insertQuery, [username, password, avatar], (err, result) => {
+//             if (err) {
+//                 return res.status(500).json({ error: 'Database error' });
+//             }
+//             res.status(201).json({ message: 'User registered successfully', userId: result.insertId });
+//         });
+//     });
+// });
+
+
+
 
 // Khởi động server
 app.listen(port, () => {
