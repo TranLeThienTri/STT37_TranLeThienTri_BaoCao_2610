@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import axios from "axios";
 export default ProfileScreen = ({ navigation, route }) => {
-    const user = route.params.user;
+    const user = route.params?.user;
     const [username, setUsername] = useState(user.name);
     const [password, setPassword] = useState(user.password);
     const [image, setImage] = useState(user.avatar);
@@ -54,10 +54,15 @@ export default ProfileScreen = ({ navigation, route }) => {
             <View style={styles.container}>
                 {/* Header */}
                 <View style={styles.header}>
-                    <Image
+                    {/* <Image
                         source={require("../assets/adaptive-icon.png")}
                         style={styles.avatar}
                         resizeMode="contain"
+                    /> */}
+
+                    <Image
+                        source={user && user.avatar ? { uri: `http://localhost:8081/uploads/${user.avatar}` } : require('../assets/adaptive-icon.png')}
+                        style={styles.avatar}
                     />
                 </View>
                 {/* body */}

@@ -70,7 +70,7 @@ const Screen_01 = ({ navigation, route }) => {
                                     source={
                                         user && user.avatar
                                             ? {
-                                                  uri: `http://localhost/uploads/${user.avatar}`,
+                                                  uri: `http://localhost:8081/uploads/${user.avatar}`,
                                               }
                                             : require("../assets/personicon.png")
                                     }
